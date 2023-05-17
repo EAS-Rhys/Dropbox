@@ -1,0 +1,27 @@
+Purpose and Scope
+
+The purpose of this Low-Level Design (LLD) document is to provide a detailed technical specification and architectural blueprint for the Application Automation solution. This LLD serves as a comprehensive guide for the implementation and deployment of the solution within the organization's IT infrastructure.
+
+The Application Automation solution aims to simplify the process of deploying applications and managing changes in the bank's IaaS public and private cloud estates. It leverages Ansible as the primary automation tool, with an abstraction layer that simplifies its usage for users. By providing a simplified YAML format file as the entry point, the solution empowers users to deploy applications without requiring in-depth knowledge of Ansible while ensuring a controlled, GitOps-driven method of release.
+
+The scope of this LLD encompasses the design, architecture, and integration details of the Application Automation solution. It covers the key components involved, including Openshift Container Platform (OCP), Tekton, CICD Blocks Framework, Ansible, and GitHub Enterprise (GHE). Additionally, it includes the integration with HashiCorp Vault, CyberArk, and ServiceNow, detailing the authentication methods and security measures employed.
+
+This LLD will provide comprehensive guidance on the hosting aspects of the solution, including compute resources, network connectivity, and capacity planning. It will outline the necessary configurations, network policies, and connectivity requirements to ensure the solution operates within an isolated namespace within OCP and communicates securely with multiple network zones, including Azure DCX, Google DCX, and Private Cloud environments.
+
+Furthermore, the authentication flow, as described earlier, will be detailed to provide a clear understanding of how the solution authenticates and interacts with various components, including the retrieval of certificates from Vault, the usage of CyberArk for domain service accounts, and the authentication methods employed for different integrations.
+
+This LLD will serve as a reference for the implementation team, providing a comprehensive understanding of the solution's architecture, components, integration points, and security considerations. It will assist in the successful deployment, configuration, and operation of the Application Automation solution, enabling users to efficiently deploy applications and manage changes within the bank's IT infrastructure.
+
+
+
+Out of Scope
+
+The following items are considered out of scope for this Low-Level Design (LLD) document:
+
+Detailed Technical Specifications of Capabilities and Pipeline Blocks: The low-level technical details and specifications of individual capabilities and pipeline blocks, such as specific code snippets, configurations, or implementation details, are not covered in this LLD. Instead, these details are documented in the README files within their respective GitHub repositories. The README files provide comprehensive information, instructions, and examples specific to each capability or pipeline block, allowing for a more granular understanding of their functionality and usage.
+
+Detailed Configuration Steps for Third-Party Tools: While this LLD provides an overview and integration details of third-party tools such as Tekton, Ansible, GitHub Enterprise, HashiCorp Vault, CyberArk, and ServiceNow, it does not delve into the specific step-by-step configuration procedures for these tools. Configuration and setup instructions for these tools are typically provided by their respective vendors or are available in separate documentation resources specific to each tool.
+
+Deployment Pipeline Customizations: Customizations or modifications to the deployment pipeline beyond the scope of the core Application Automation solution are considered out of scope. This includes any specific customizations or extensions made to the pipeline blocks or workflows to meet specific project requirements. Customizations to the pipeline should be documented separately and maintained within the respective GitHub repositories associated with the pipeline blocks.
+
+It is important to refer to the appropriate documentation and resources, including the README files in the GitHub repositories, for detailed technical information, specific implementation details, and customization guidelines related to individual capabilities, pipeline blocks, and third-party tools. These resources will provide comprehensive instructions, examples, and best practices for utilizing and extending the capabilities of the Application Automation solution.
