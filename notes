@@ -12,3 +12,90 @@ Ansible is an automation tool that simplifies the deployment and configuration m
 
 GitHub Enterprise:
 GitHub Enterprise is a self-hosted version of the popular Git-based version control system and collaboration platform. It provides a secure and scalable environment for hosting private repositories, managing code reviews, and facilitating team collaboration. By utilizing GitHub Enterprise, our solution centralizes source code management, allowing teams to track changes, manage branches, and enforce code quality standards effectively. It also integrates seamlessly with CI/CD pipelines, enabling automated builds and deployments triggered by code changes. GitHub Enterprise's rich set of features, including pull requests, issue tracking, and code reviews, enhances collaboration and streamlines the development process within our solution.
+
+Manifest Generator:
+The Application Automation solution incorporates a Manifest Generator component, which is a React application designed to enhance the user experience and further simplify the deployment process. The Manifest Generator utilizes JSON schema specifications retrieved dynamically from GitHub Enterprise (GHE) repositories to drive the automatic generation of user interfaces for defining application manifests.
+
+The Manifest Generator allows users to import and export the YAML definition files used in the solution, but in a guided and intuitive manner. Users are presented with a user-friendly interface that dynamically generates form fields based on the JSON schema specifications. These specifications define the structure, data types, and validation rules for the application manifest.
+
+By leveraging the JSON schema titles and restrictions, the Manifest Generator provides users with helpful guidance and validation against all inputs. Users can benefit from features such as auto-completion, dropdown selections, and real-time validation. This ensures that the defined manifests adhere to the required format, minimizing errors and streamlining the deployment process.
+
+The Manifest Generator also incorporates additional features to assist users in creating accurate and valid manifests. These include contextual tooltips, inline documentation, and predefined templates to guide users through the configuration process. The application validates the user input against the JSON schema, providing immediate feedback on any errors or inconsistencies.
+
+Furthermore, the Manifest Generator supports seamless integration with the GitOps-driven release process. Users can commit and push the generated YAML definition files to the designated Git repositories, triggering the automated deployment and change management workflows within the Application Automation solution.
+
+By leveraging the Manifest Generator, users within the bank can confidently create application manifests without the need to understand the underlying YAML structure or JSON schemas. The guided approach, validation, and assistance provided by the Manifest Generator simplify the process, reduce manual errors, and ensure compliance with the defined application standards and guidelines.
+
+Integrations:
+
+Tekton Integration:
+Our solution seamlessly integrates with Tekton to leverage its powerful CI/CD capabilities. We utilize Tekton's APIs and resources to define and execute CI/CD pipelines. The integration allows us to create Tekton pipeline resources, such as Tasks, Pipelines, and PipelineRuns, programmatically. We can dynamically configure the pipeline steps, dependencies, and triggers based on the specific requirements of our application. Additionally, we utilize Tekton's event-driven architecture to trigger pipeline runs automatically upon source code changes or other relevant events. This integration ensures a smooth and efficient CI/CD workflow within our solution.
+
+GitHub Enterprise Integration:
+Our solution integrates with GitHub Enterprise (GHE) to enable seamless collaboration and version control. We leverage the GitHub Actions feature provided by GHE to automate various tasks in our CI/CD pipelines. Using GHE app authentication, we authenticate our solution with the GHE instance, allowing us to interact with repositories and perform actions securely. The integration includes the following actions:
+
+Create Release: Our solution uses the GitHub API to create releases programmatically. This action automates the process of tagging releases and attaching relevant artifacts or documentation.
+
+SCM Checkout: Our solution utilizes the GitHub API to retrieve the source code from GHE repositories. We perform the necessary authentication and authorization to access the repositories securely.
+
+Retrieve Galaxy Dependencies: When deploying applications, our solution leverages the Ansible Galaxy ecosystem. We use the GitHub API to retrieve required dependencies from GHE repositories, ensuring consistent and reliable deployment of Ansible roles and playbooks.
+
+Retrieve GitHub Release: Our solution integrates with GHE to retrieve information about specific releases. This action allows us to fetch release assets, changelogs, and other release-related data programmatically.
+
+Update Release: Our solution utilizes the GitHub API to update release information, such as adding release notes, attaching artifacts, or modifying release metadata. This integration streamlines the release management process within our solution.
+
+Hashicorp Vault Integration:
+To enhance security and manage secrets effectively, our solution integrates with Hashicorp Vault. We utilize Vault's API and client libraries to securely retrieve and store sensitive information, such as passwords, API keys, and certificates. Our solution authenticates with Vault using the appropriate authentication method, ensuring secure access to secrets. By integrating with Vault, we can dynamically fetch secrets during the CI/CD pipeline execution, reducing the risk of exposing sensitive data and enhancing overall security posture.
+
+CyberArk Integration (using CCP certificate authentication):
+Our solution integrates with CyberArk to securely manage and retrieve credentials for privileged accounts. We utilize the CyberArk Central Credential Provider (CCP) certificate authentication method to authenticate with CyberArk and retrieve credentials programmatically. This integration ensures that our solution can access privileged credentials securely during the execution of CI/CD pipelines. By leveraging CyberArk's capabilities, we enhance security and maintain strict access controls over privileged accounts, reducing the risk of unauthorized access or misuse.
+
+ServiceNow Integration:
+Our solution integrates with ServiceNow to facilitate seamless incident and change management processes. We utilize ServiceNow's APIs to create and update tickets, retrieve ticket information, and automate various IT service management tasks. This integration allows our solution to interact with ServiceNow workflows, trigger change requests, and manage incidents within the CI/CD pipeline execution. By integrating with ServiceNow, we streamline the communication and collaboration between development, operations, and service management teams, ensuring efficient and effective handling of incidents and changes.
+
+
+
+High-Level Requirements: Application Automation Solution
+
+Simplified User Experience:
+The Application Automation solution aims to provide users within the bank with a simplified and user-friendly experience for deploying applications and making changes to applications. The solution utilizes Ansible as the underlying automation tool but abstracts its complexity through an intuitive interface. Users can interact with the solution using a simplified YAML format file as the entry point, eliminating the need for in-depth knowledge of Ansible. The solution's user interface provides a streamlined experience, making application deployment and change management accessible to a wider range of users within the bank.
+
+IaaS Public and Private Cloud Support:
+The Application Automation solution supports the deployment of applications and changes across the bank's IaaS public and private cloud estates. It provides seamless integration with the targeted cloud environments, enabling users to deploy applications and make changes consistently across different cloud infrastructures. The solution ensures compatibility and optimizes its functionality to align with the specific capabilities and requirements of the bank's public and private cloud providers.
+
+Controlled and GitOps-Driven Release Process:
+The Application Automation solution adopts a controlled and GitOps-driven release process to ensure stability, traceability, and governance throughout the application deployment lifecycle. Users can initiate releases and changes through Git repositories, providing a centralized and version-controlled approach to manage application configurations and release artifacts. The solution leverages GitOps principles to ensure that changes are applied consistently and securely across different environments. This includes maintaining a clear audit trail, rollback capabilities, and robust change approval workflows.
+
+Automation of Application Deployment and Change Management:
+The primary goal of the Application Automation solution is to automate the deployment of applications and the management of changes. It utilizes Ansible as the core automation engine, enabling the execution of complex deployment tasks and configuration management activities. The solution automates various steps involved in the application deployment process, such as infrastructure provisioning, application configuration, and dependencies management. It also provides automation capabilities for making changes to existing applications, ensuring consistency and reliability across different environments.
+
+Scalability and Performance:
+The Application Automation solution is designed to handle the scalability and performance requirements of the bank's application deployment processes. It should be capable of efficiently managing a large number of applications and handling concurrent deployment tasks. The solution optimizes resource utilization, minimizes downtime, and ensures high availability of the deployed applications. It should also provide performance metrics and monitoring capabilities to allow for continuous improvement and optimization of the deployment process.
+
+Security and Access Control:
+Security is a crucial aspect of the Application Automation solution. It should provide robust access control mechanisms to ensure that only authorized users can deploy applications and make changes. The solution integrates with the bank's existing identity and access management systems, enforcing appropriate permissions and role-based access controls. It should also handle secrets and sensitive data securely, integrating with tools such as Hashicorp Vault or CyberArk to manage credentials and encryption keys effectively.
+
+Reporting and Auditing:
+The Application Automation solution provides comprehensive reporting and auditing capabilities to support compliance requirements and provide visibility into the deployment process. It should generate detailed reports on deployments, changes, and associated activities, enabling stakeholders to track and review the history of application deployments. The solution should also integrate with existing monitoring and logging systems to capture and analyze relevant metrics, logs, and events for troubleshooting and performance analysis.
+
+Extensibility and Integration:
+The Application Automation solution is designed to be extensible and easily integrated into the bank's existing ecosystem of tools and processes. It should provide well-defined APIs and integration points to allow seamless integration with other systems, such as service management tools (e.g., ServiceNow) or configuration management databases (CMDBs). The solution should also support customization and extension, enabling the bank to incorporate specific requirements and adapt to future changes in the technology landscape.
+
+
+Solution Overview: Application Automation
+
+The Application Automation solution is designed to simplify and streamline the deployment of applications and changes within the bank's infrastructure. By leveraging Ansible with an abstraction layer and a Manifest Generator component, the solution empowers users to deploy applications to the bank's IaaS public and private cloud estates without requiring in-depth knowledge of Ansible. It provides a controlled, GitOps-driven method of release, ensuring stability, traceability, and compliance throughout the application deployment lifecycle.
+
+At the core of the solution is Ansible, a powerful automation tool widely used for infrastructure provisioning and application deployment. However, the complexity of Ansible is abstracted through an intuitive interface. Users interact with the solution using a simplified YAML format file as the entry point, eliminating the need for extensive Ansible expertise. This approach allows users within the bank to more easily deploy applications and make changes, improving their efficiency and productivity.
+
+The Manifest Generator component further enhances the user experience by automatically generating user interfaces based on dynamically retrieved JSON schema specifications from GitHub Enterprise (GHE) repositories. The Manifest Generator provides a guided and intuitive environment for defining application manifests. It ensures that manifests adhere to the required format by providing validation against all inputs and leveraging JSON schema titles and restrictions. Users benefit from auto-completion, dropdown selections, real-time validation, tooltips, inline documentation, and predefined templates. The Manifest Generator simplifies the manifest creation process, minimizes errors, and ensures adherence to application standards and guidelines.
+
+The Application Automation solution supports the bank's IaaS public and private cloud estates, enabling seamless deployment across different cloud infrastructures. It integrates with the targeted cloud environments, ensuring compatibility and optimized functionality. The solution incorporates a controlled, GitOps-driven release process, enabling users to initiate releases and changes through Git repositories. This centralized and version-controlled approach provides a clear audit trail, rollback capabilities, and robust change approval workflows.
+
+Automation is at the heart of the solution, enabling the efficient deployment of applications and management of changes. It automates tasks such as infrastructure provisioning, application configuration, and dependencies management. The solution ensures scalability and performance, allowing for the management of a large number of applications and concurrent deployment tasks. Security and access control are paramount, with robust mechanisms in place to authenticate users and manage sensitive data securely. The solution integrates with existing identity and access management systems and can handle secrets using tools like Hashicorp Vault or CyberArk.
+
+Reporting and auditing capabilities provide visibility into the deployment process. Detailed reports on deployments, changes, and associated activities help stakeholders track and review the history of application deployments. Integration with monitoring and logging systems enables performance analysis and troubleshooting.
+
+The Application Automation solution is designed to be extensible and easily integrated into the bank's existing ecosystem of tools and processes. It provides well-defined APIs and integration points, supporting seamless integration with other systems such as service management tools and configuration management databases (CMDBs). Customization and extension options allow the solution to adapt to specific requirements and future technology changes.
+
+In summary, the Application Automation solution simplifies application deployment and change management within the bank. It empowers users with a user-friendly interface, abstracts Ansible's complexity, and provides a controlled, GitOps-driven release process. By utilizing the Manifest Generator and leveraging JSON schema specifications, users can define manifests with ease, guided validation, and helpful direction. With scalability, security, and extensibility in mind, the solution ensures efficient and compliant application deployments, enabling the bank to rapidly respond to changing business needs while maintaining governance and stability.
