@@ -258,3 +258,31 @@ Token-Based Authentication: OAuth 2.0 relies on the use of access tokens to auth
 Authorization Scopes: ServiceNow provides a fine-grained authorization model using scopes. The Application Automation solution requests specific scopes during the OAuth 2.0 authentication process to define the permissions and access levels it requires within ServiceNow. This helps limit the access of the solution to only the necessary resources and actions, enhancing the overall security posture.
 
 By implementing OAuth 2.0 for ServiceNow integration, the Application Automation solution ensures a secure and standardized authentication flow. It adheres to the best practices and security guidelines defined by OAuth 2.0 and ServiceNow, safeguarding the authentication process and protecting sensitive data during interactions with ServiceNow APIs.
+
+
+Acronym/Abbreviation	Meaning
+LLD	Low-Level Design
+YAML	YAML Ain't Markup Language
+CI/CD	Continuous Integration/Continuous Deployment
+OCP	Openshift Container Platform
+Tekton	Kubernetes-native Continuous Integration framework
+CICD	Continuous Integration/Continuous Deployment
+GHE	GitHub Enterprise
+JSON	JavaScript Object Notation
+API	Application Programming Interface
+SCCM	System Center Configuration Manager
+IaaS	Infrastructure as a Service
+GitOps	Git Operations
+React	JavaScript library for building user interfaces
+JSON Schema	A vocabulary for validating JSON data structures
+DNS	Domain Name System
+HTTP	Hypertext Transfer Protocol
+HTTPS	Hypertext Transfer Protocol Secure
+LDAP	Lightweight Directory Access Protocol
+SQL	Structured Query Language
+CCP	CyberArk Central Credential Provider
+TLS	Transport Layer Security
+SSL	Secure Sockets Layer
+OAuth	Open Authorization
+TLS	Transport Layer Security
+SSL	Secure Sockets Layer
