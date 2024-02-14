@@ -1,0 +1,159 @@
+#!/bin/bash
+
+# Exit on any error
+set -e
+
+# Function to handle errors
+error_exit() {
+    echo "$1" 1>&2
+    exit 1
+}
+
+# Suppress login message
+touch /home/ws1/.hushlogin || error_exit "Error: Failed to touch .hushlogin."
+
+# Reload daemon and set WSL configuration
+sudo systemctl daemon-reload || error_exit "Error: Failed to reload daemon."
+{
+    printf "%s\n" '[boot] systemd=true' '[interop] appendWindowsPath=false' '[automount] mountFsTab=true'
+} > /etc/wsl.conf || error_exit "Error: Failed to write WSL configuration."
+
+# Enable and start wsl-vpnkit service
+sudo systemctl enable wsl-vpnkit && sudo systemctl start wsl-vpnkit || error_exit "Error: Failed to enable/start wsl-vpnkit."
+
+# Download CA certificates
+curl -kfsSLO https://nexus.alf.uk/repository/binaries/wsl/ca-certificates.crt || error_exit "Error: Failed to download CA certificates."
+
+# Update packages and install tools
+sudo apt update -y && sudo apt install -y git gh jq curl ca-certificates gnupg unzip || error_exit "Error: Failed to update/install packages."
+
+# Copy CA certificates to system directory
+sudo cp ca-certificates.crt /etc/ssl/certs/ca-certificates.crt || error_exit "Error: Failed to copy CA certificates."
+
+# Download and install Go
+curl -LO https://nexus.alf.uk/repository/binaries/go/go1.20.5.linux-amd64.tar.gz || error_exit "Error: Failed to download Go."
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz || error_exit "Error: Failed to install Go."
+
+# Set PATH for Go if the directory exists
+if [ -d "/usr/local/go/bin" ]; then
+    printf "%s\n" 'export PATH="$PATH:/usr/local/go/bin"' >> ~/.profile
+else
+    echo "Warning: Go directory not found. Skipping PATH update."
+fi
+
+# Set Go environment variables
+go env -w GOPROXY=https://nexus3.devops.lloydsbanking.com/repository/golang-proxy/ || error_exit "Error: Failed to set GOPROXY."
+go env -w GOSUMDB=off || error_exit "Error: Failed to set GOSUMDB."
+go env -w GO111MODULE=on || error_exit "Error: Failed to set GO111MODULE."
+
+# Install `kind` using Go
+go install sigs.k8s.io/kind@v0.20.0 || error_exit "Error: Failed to install kind."
+
+# Set PATH for Go binaries if the directory exists
+if [ -d "$HOME/go/bin" ]; then
+    printf "%s\n" 'export PATH="$PATH:$HOME/go/bin"' >> ~/.profile
+else
+    echo "Warning: Go bin directory not found. Skipping PATH update."
+fi
+
+# Get stable version of kubectl and set PATH
+curl https://storage.googleapis.com/kubernetes-release/release/stable.txt > ./stable-kubectl.txt || error_exit "Error: Failed to fetch stable version of kubectl."
+export KUBECTL_VERSION=$(cat ./stable-kubectl.txt)
+mkdir -p ~/bin
+if [ -d "$HOME/bin" ]; then
+    printf "%s\n" 'export PATH="$PATH:$HOME/bin"' >> ~/.profile
+    source ~/.profile
+else
+    echo "Warning: bin directory not found. Skipping PATH update."
+fi
+
+# Download kubectl and set it as executable
+cd ~/bin || error_exit "Error: Failed to change directory to ~/bin."
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl || error_exit "Error: Failed to download kubectl."
+chmod +x ./kubectl || error_exit "Error: Failed to set kubectl as executable."
+
+# Add kubectl completion and aliases to bash profile
+{
+    echo "source <(kubectl completion bash)"
+    echo "complete -o default -F __start_kubectl k"
+    echo "alias k='kubectl'"
+    echo "alias kg='kubectl get'"
+    echo "alias kgp='kubectl get pods'"
+} >> ~/.bash_aliases
+source ~/.bash_aliases || echo "Warning: Failed to source bash_aliases. Some aliases may not work."
+
+# Link kube configurations from mounted Windows directories
+mkdir -p ~/.kube
+ln -sf "/mnt/c/users/$USER/.kube/config" ~/.kube/config || error_exit "Error: Failed to link kube config."
+
+# Download OpenShift CLI, Tekton CLI, Vault, and extract them
+cd ~/bin || error_exit "Error: Failed to change directory to ~/bin."
+curl -fsSLO https://nexus.alf.uk/repository/binaries/wsl/oc.tar || error_exit "Error: Failed to download OpenShift CLI."
+curl -fsSLO https://nexus.alf.uk/repository/binaries/wsl/tkn-linux-amd64.tar.gz || error_exit "Error: Failed to download Tekton CLI."
+curl -fsSLO https://nexus.alf.uk/repository/binaries/wsl/vault_1.14.0_linux_amd64.zip || error_exit "Error: Failed to download Vault."
+tar xf oc.tar || error_exit "Error: Failed to extract OpenShift CLI."
+tar xzf tkn-linux-amd64.tar.gz || error_exit "Error: Failed to extract Tekton CLI."
+unzip vault_1.14.0_linux_amd64.zip || error_exit "Error: Failed to extract Vault."
+
+# Setup Docker repository and install Docker
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg || error_exit "Error: Failed to add Docker GPG key."
+sudo chmod a+r /etc/apt/keyrings/docker.gpg || error_exit "Error: Failed to set permissions on Docker GPG key."
+
+# Add Docker repository and install Docker components
+{
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
+} | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null || error_exit "Error: Failed to add Docker repository."
+sudo apt update || error_exit "Error: Failed to update package lists for Docker."
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin || error_exit "Error: Failed to install Docker components."
+
+# Create the docker group and add your user 'wsl' to it
+sudo groupadd docker || echo "Warning: Docker group may already exist."
+sudo usermod -aG docker $USER || error_exit "Error: Failed to add user to Docker group."
+
+# Enable the Docker service to start on boot
+sudo systemctl enable docker.service || error_exit "Error: Failed to enable Docker service."
+sudo systemctl enable containerd.service || error_exit "Error: Failed to enable containerd service."
+
+# Set up the Windows path for VS Code (assuming WSL usage)
+if [ -d "/mnt/c/Users/$USERID/AppData/Local/Programs/Microsoft VS Code/bin" ]; then
+    printf "%s\n" "export PATH=\"$PATH:/mnt/c/Users/$USERID/AppData/Local/Programs/Microsoft VS Code/bin\"" >> ~/.profile
+else
+    echo "Warning: VS Code path not found. Skipping PATH update."
+fi
+
+# Apply the new PATH changes
+source ~/.profile || error_exit "Error: Failed to source .profile."
+
+# Set up an alias for Vault login
+printf "%s\n" "alias v='export VAULT_TOKEN=$(vault login -token-only -method=ldap username=$USERID)'" >> ~/.bash_aliases || error_exit "Error: Failed to set alias for Vault login."
+
+# Log into the Ingested Docker registry using credentials stored in environment variables
+docker login ingested-docker-zeus-nexus.ia.lloydsbanking.cloud --username admin --password "$INGESTED_REGISTRY" || error_exit "Error: Failed to log in to Docker registry."
+
+# Log into the Staging Docker registry using credentials stored in environment variables
+docker login docker-staging.alf.uk --username staging-read --password "$STAGING_READ" || error_exit "Error: Failed to log in to the Staging Docker registry."
+
+# Create a directory for the cicd-blocks project
+mkdir -p /blocksv2work/repos/prod/cicd-blocks || error_exit "Error: Failed to create the cicd-blocks directory."
+
+# Change into the newly created directory
+cd /blocksv2work/repos/prod/cicd-blocks || error_exit "Error: Failed to change directory to /blocksv2work/repos/prod/cicd-blocks."
+
+# Clone the cicd-blocks and block-zeus-utils repositories using the GH_TOKEN for authentication
+git clone https://$GH_TOKEN:x-oauth-basic@ghe.service.group/cicd-blocks/cicd-blocks.git || error_exit "Error: Failed to clone the cicd-blocks repository."
+git clone https://$GH_TOKEN:x-oauth-basic@ghe.service.group/cicd-blocks/block-zeus-utils.git || error_exit "Error: Failed to clone the block-zeus-utils repository."
+
+# Initialize a Go workspace with the cloned repositories
+go work init ./cicd-blocks ./block-zeus-utils || error_exit "Error: Failed to initialize a Go workspace."
+
+# Change directory into the cicd-blocks/etc folder
+cd cicd-blocks/etc || error_exit "Error: Failed to change directory to cicd-blocks/etc."
+
+# Check if the scripts are executable and run them to recreate a Kubernetes cluster and deploy Tekton
+if [ -x "./recreate-kind-cluster.sh" ] && [ -x "./deploy-tekton.sh" ]; then
+    ./recreate-kind-cluster.sh || error_exit "Error: Failed to recreate the Kubernetes cluster."
+    ./deploy-tekton.sh || error_exit "Error: Failed to deploy Tekton."
+else
+    error_exit "Error: Necessary scripts are not executable or missing."
+fi
