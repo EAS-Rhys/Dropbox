@@ -12,34 +12,51 @@ error_exit() {
 # Define a list of environment variables to be set
 env_vars=("DB_USER" "DB_PASS" "API_KEY" "SECRET_TOKEN")
 
-# Function to check and append variable to profile if not exists
-append_to_profile_if_missing() {
+# Function to append or update variable in profile
+update_profile() {
     local var="$1"
     local value="$2"
 
-    # Check if the variable already exists in the profile to avoid duplicates
-    if ! grep -q "export $var=" ~/.profile; then
-        # If not exists, append the line
+    # Check if the variable exists in the profile
+    if grep -q "export $var=" ~/.profile; then
+        # Variable exists, so replace its value
+        sed -i "/export $var=/c\export $var=$value" ~/.profile
+    else
+        # Variable doesn't exist, so append it
         echo "export $var=$value" >> ~/.profile
-        echo "$var added to ~/.profile."
     fi
+    echo "$var updated in ~/.profile."
 }
 
 # Loop through each environment variable
 for var in "${env_vars[@]}"; do
     if printenv | grep -q "^$var="; then
-        echo "$var already set in the environment."
-        # Check if it exists in the profile, if not, add it
-        append_to_profile_if_missing "$var" "${!var}"
+        current_value=$(printenv "$var")
+        echo "$var is already set in the environment with value: $current_value"
+        read -rp "Do you want to update its value? [y/N]: " decision
+        if [[ $decision =~ ^[Yy]$ ]]; then
+            read -rp "Enter new value for $var: " new_value
+            export "$var=$new_value"
+            update_profile "$var" "$new_value"
+        else
+            update_profile "$var" "$current_value"
+        fi
     else
-        # Prompt the user for the environment variable's value
-        read -rp "Enter value for $var: " value
-
-        # Export the variable for the current session
-        export "$var=$value"
-
-        # Write the export command to the profile for persistence
-        append_to_profile_if_missing "$var" "$value"
+        # Variable is not set in the current environment
+        # Check if it's in the profile
+        if grep -q "export $var=" ~/.profile; then
+            echo "$var is already set in ~/.profile."
+            read -rp "Do you want to update its value? [y/N]: " decision
+            if [[ $decision =~ ^[Yy]$ ]]; then
+                read -rp "Enter new value for $var: " value
+                update_profile "$var" "$value"
+            fi
+        else
+            # Variable is not set anywhere, prompt for its value
+            read -rp "Enter value for $var: " value
+            export "$var=$value"
+            update_profile "$var" "$value"
+        fi
     fi
 done
 
@@ -47,7 +64,6 @@ done
 source ~/.profile
 
 echo "Environment variables have been processed. Current session updated."
-
 # Suppress login message
 touch /home/ws1/.hushlogin || error_exit "Error: Failed to touch .hushlogin."
 
