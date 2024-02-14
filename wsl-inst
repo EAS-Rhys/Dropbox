@@ -9,6 +9,45 @@ error_exit() {
     exit 1
 }
 
+# Define a list of environment variables to be set
+env_vars=("DB_USER" "DB_PASS" "API_KEY" "SECRET_TOKEN")
+
+# Function to check and append variable to profile if not exists
+append_to_profile_if_missing() {
+    local var="$1"
+    local value="$2"
+
+    # Check if the variable already exists in the profile to avoid duplicates
+    if ! grep -q "export $var=" ~/.profile; then
+        # If not exists, append the line
+        echo "export $var=$value" >> ~/.profile
+        echo "$var added to ~/.profile."
+    fi
+}
+
+# Loop through each environment variable
+for var in "${env_vars[@]}"; do
+    if printenv | grep -q "^$var="; then
+        echo "$var already set in the environment."
+        # Check if it exists in the profile, if not, add it
+        append_to_profile_if_missing "$var" "${!var}"
+    else
+        # Prompt the user for the environment variable's value
+        read -rp "Enter value for $var: " value
+
+        # Export the variable for the current session
+        export "$var=$value"
+
+        # Write the export command to the profile for persistence
+        append_to_profile_if_missing "$var" "$value"
+    fi
+done
+
+# Source the profile file to apply changes in the current session
+source ~/.profile
+
+echo "Environment variables have been processed. Current session updated."
+
 # Suppress login message
 touch /home/ws1/.hushlogin || error_exit "Error: Failed to touch .hushlogin."
 
