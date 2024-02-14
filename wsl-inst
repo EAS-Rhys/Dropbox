@@ -16,14 +16,18 @@ env_vars=("DB_USER" "DB_PASS" "API_KEY" "SECRET_TOKEN")
 update_profile() {
     local var="$1"
     local value="$2"
+    # Properly escape the value for special characters
+    local escaped_value=$(printf '%q' "$value")
 
     # Check if the variable exists in the profile
     if grep -q "export $var=" ~/.profile; then
         # Variable exists, so replace its value
-        sed -i "/export $var=/c\export $var=$value" ~/.profile
+        # Note: Using @ as delimiter in sed to avoid conflict with path separators
+        sed -i "/export $var=/c\export $var=\"$escaped_value\"" ~/.profile
     else
         # Variable doesn't exist, so append it
-        echo "export $var=$value" >> ~/.profile
+        # Surround the value with quotes to ensure special characters are preserved
+        echo "export $var=\"$escaped_value\"" >> ~/.profile
     fi
     echo "$var updated in ~/.profile."
 }
