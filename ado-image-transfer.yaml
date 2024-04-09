@@ -1,0 +1,44 @@
+
+
+steps:
+- script: |
+    echo "Checking Helm installation..."
+    if ! command -v helm &> /dev/null; then
+        echo "Helm could not be found, installing..."
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+    else
+        echo "Helm is already installed."
+    fi
+  displayName: 'Install Helm CLI'
+
+- script: |
+    echo "Adding Helm Chart Repository..."
+    helm repo add my-helm-chart http://my.chart-repo.com
+    echo "Updating Helm repositories..."
+    helm repo update
+  displayName: 'Initialize Helm and Add Chart Repo'
+
+- script: |
+    echo "Generating Kubernetes manifest using Helm template..."
+    helm template my-release my-helm-chart -f values.yaml > generated-manifest.yaml
+  displayName: 'Generate Manifest from Helm Chart'
+
+- script: |
+    echo "Extracting list of images..."
+    images=$(cat generated-manifest.yaml | grep 'image:' | cut -d ':' -f2- | tr -d ' "' | sort | uniq)
+    echo "List of images: $images"
+    for img in $images; do
+      source_image=$img
+      target_image="my-target-registry.com/${source_image##*/}"
+      echo "Pulling image $source_image..."
+      docker pull $source_image
+      echo "Tagging image to target registry $target_image..."
+      docker tag $source_image $target_image
+      echo "Pushing image to target registry $target_image..."
+      docker push $target_image
+    done
+  displayName: 'Pull and Push Images to Target Registry'
+  env:
+    DOCKER_CLI_EXPERIMENTAL: enabled
