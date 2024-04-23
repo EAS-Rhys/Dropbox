@@ -15,14 +15,14 @@ steps:
 
 - script: |
     echo "Adding Helm Chart Repository..."
-    helm repo add my-helm-chart http://my.chart-repo.com
+    helm repo add harness https://harness.github.io/helm-charts
     echo "Updating Helm repositories..."
     helm repo update
   displayName: 'Initialize Helm and Add Chart Repo'
 
 - script: |
     echo "Generating Kubernetes manifest using Helm template..."
-    helm template my-release my-helm-chart -f values.yaml > generated-manifest.yaml
+    helm template my-release harness/harness -f override-cne.yaml > generated-manifest.yaml
   displayName: 'Generate Manifest from Helm Chart'
 
 - script: |
@@ -35,9 +35,9 @@ steps:
       echo "Pulling image $source_image..."
       docker pull $source_image
       echo "Tagging image to target registry $target_image..."
-      docker tag $source_image $target_image
+      # docker tag $source_image $target_image
       echo "Pushing image to target registry $target_image..."
-      docker push $target_image
+      # docker push $target_image
     done
   displayName: 'Pull and Push Images to Target Registry'
   env:
