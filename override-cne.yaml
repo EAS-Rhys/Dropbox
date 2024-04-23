@@ -1,0 +1,116 @@
+ff:
+  ff-service:
+    timescaledb:
+      sslEnabled: true
+  ff-pushpin-service:
+    timescaledb:
+      sslEnabled: true
+platform:
+  harness-manager:
+    timescaledb:
+      sslEnabled: true
+    config:
+      SECONDARY_TIMESCALEDB_SSL_MODE: "require"
+      TIMESCALEDB_SSL_MODE: "require"
+global:
+  airgap: false
+  # imageRegistry: "placeholder.azurecr.io"
+  # license:
+  #   secrets:
+  #     kubernetesSecrets:
+  #       - secretName: "harness-license"
+  #         keys:
+  #           CG_LICENSE: "cg-license"
+  awsServiceEndpointUrls:
+    enabled: false
+  ci:
+    enabled: true
+  cd:
+    enabled: true
+  ff:
+    enabled: true
+  database:
+    mongo:
+      installed: true
+    postgres:
+      installed: false
+    clickhouse:
+      enabled: false
+    redis:
+      installed: true
+    timescaledb:
+      addSSLModeArg: true
+      hosts:
+        - harness.postgres.database.azure.com:5432
+        # - hnkco88ab3.wmvn8im7do.tsdb.cloud.timescale.com:37023
+      installed: false
+      ## - secret name containing external postgresql credentials
+      secretName: "postgres-secret"
+      ## - key within secret containing password
+      passwordKey: "password"
+      ## - protocol to use for connection
+      protocol: postgres
+      ## - key within secret containing username
+      userKey: "username"
+      sslEnabled: true
+    # Disable other database configurations
+  # Disable components not related to CI, CD, or FF
+  ti:
+    enabled: false
+  cdc:
+    enabled: false
+  ccm:
+    enabled: false
+  cet:
+    enabled: false
+  cg:
+    enabled: false
+  chaos:
+    enabled: false
+  gitops:
+    enabled: false
+  migrator:
+    enabled: false
+  ngcustomdashboard:
+    enabled: false
+  servicediscoverymanager:
+    enabled: false
+  opa:
+    enabled: false
+  srm:
+    enabled: false
+  ssca:
+    enabled: false
+  sto:
+    enabled: false
+  ng:
+    enabled: true
+  ingress:
+    enabled: false
+  istio:
+    enabled: true
+    gateway:
+      # -- Enable to create istio-system gateway
+      create: true 
+      # -- override the name of gateway
+      name: "harness-istio-gateway"
+      # -- override the name of namespace to deploy gateway
+      namespace: "harness-system"
+      port: 443
+      protocol: HTTPS
+      # -- adds a gateway selector
+      selector:
+        istio: harness-system
+    # -- add global.istio.istioGatewayServiceUrl in hosts if global.istio.istioGatewayServiceUrl is not empty.
+    hosts:
+      - '*'
+    # -- set to istio gateway's k8s service FQDN for internal use case. eg "internal-istio-gateway.istio-system.svc.cluster.local"
+    # If not set, internal request routing would happen via global.loadbalancerUrl
+    # istioGatewayServiceUrl: "harness-istio-gateway.harness-system.svc.cluster.local"
+    strict: false
+    virtualService:
+      gateways:
+        - "harness-system/harness-istio-gateway"
+      hosts:
+        - "harness-istio-gateway.harness-system.svc.cluster.local"
+        - "'*'"
