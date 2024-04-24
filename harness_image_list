@@ -1,0 +1,139 @@
+images:
+  - name: minio
+    displayName: Minio
+    tag: '2023.10.7-debian-11-r2'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'bitnami'
+  - name: accesscontrol-service-signed
+    displayName: Access Control Service
+    tag: '1.35.5'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ci-manager-signed
+    displayName: CI Manager
+    tag: '1.13.2'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ci-scm-signed
+    displayName: CI SCM
+    tag: '1.3.2'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: delegate-proxy-signed
+    displayName: Delegate Proxy
+    tag: '81011_3'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ff-postgres-migration-signed
+    displayName: FF Postgres Migration
+    tag: '1.1094.0'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ff-pushpin-signed
+    displayName: FF Pushpin
+    tag: '1.0.11'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ff-pushpin-worker-signed
+    displayName: FF Pushpin Worker
+    tag: '1.1079.1'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ff-server-signed
+    displayName: FF Server
+    tag: '1.1094.0'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ff-timescale-migration-signed
+    displayName: FF Timescale Migration
+    tag: '1.1094.0'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: gateway-signed
+    displayName: Gateway
+    tag: '1.23.2'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: helm-init-container
+    displayName: Helm Init Container
+    tag: 'latest'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: log-service-signed
+    displayName: Log Service
+    tag: '1.2.0'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: manager-signed
+    displayName: Manager
+    tag: '1.18.9'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: mongo
+    displayName: Mongo
+    tag: '4.4.22'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: nextgenui-signed
+    displayName: Nextgen UI
+    tag: '1.10.8'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ng-auth-ui-signed
+    displayName: NG Auth UI
+    tag: '1.19.0'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ng-dashboard-aggregator-signed
+    displayName: NG Dashboard Aggregator
+    tag: '1.7.1'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: ng-manager-signed
+    displayName: NG Manager
+    tag: '1.27.12'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: pipeline-service-signed
+    displayName: Pipeline Service
+    tag: '1.64.2'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: platform-service-signed
+    displayName: Platform Service
+    tag: '1.14.1'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: template-service-signed
+    displayName: Template Service
+    tag: '1.29.0'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'harness'
+  - name: redis
+    displayName: Redis
+    tag: '6.2.12-alpine'
+    skipScan: false
+    registry: 'docker.io'
+    repository: 'library'  # For official images on Docker Hub, the repository is often labeled as 'library'.
